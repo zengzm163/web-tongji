@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+validator.Checked=src/main/webapp/adminLTE
+validator.Revalidate=true
+validator.Unchecked=
