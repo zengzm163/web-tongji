@@ -27,6 +27,7 @@
     	<property name="checkoutTimeout" value="${pool.timeout}"/>  
     	<property name="maxPoolSize" value="${pool.max.size}"/>
     	<property name="minPoolSize" value="${pool.min.size}"/>
+    	<property name="maxIdleTime" value="60"/>
 		<property name="idleConnectionTestPeriod" value="60"/>
 		<property name="preferredTestQuery" value="select id from page where id=1"/>
 	</bean>
