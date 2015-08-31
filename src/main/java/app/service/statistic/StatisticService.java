@@ -48,6 +48,24 @@ public class StatisticService {
 		return data;
 	}
 	
+	public Map<String, Integer> visitRangeStat(List<String> statPoints, int startTime, int endTime) {
+		Map<String, Integer> data = new HashMap<String, Integer>();
+		for(String statPoint : statPoints) {
+			int count = 0;
+			if(Constant.STAT_POINT_PV .equals(statPoint)) {
+				count = statisticDao.visitPV(startTime, endTime);
+			} else if(Constant.STAT_POINT_UV.equals(statPoint)) {
+				count = statisticDao.visitUV(startTime, endTime);
+			} else if(Constant.STAT_POINT_NEW_UV.equals(statPoint)) {
+				count = statisticDao.visitNewUV(startTime, endTime);
+			} else if(Constant.STAT_POINT_IP.equals(statPoint)) {
+				count = statisticDao.visitIP(startTime, endTime);
+			}
+			data.put(statPoint,  count);
+		}
+		return data;
+	}
+	
 	/**
 	 * 访问量时间范围统计
 	 * @param statPoint 统计指标：PV、UV、IP

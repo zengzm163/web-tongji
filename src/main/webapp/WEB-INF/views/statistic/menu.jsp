@@ -1,8 +1,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8" %>
 <%
 String path = request.getContextPath();
-//String basePath = "https://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-String basePath = "https://"+request.getServerName()+ path+"/";
+String basePath = "https://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+//String basePath = "https://"+request.getServerName()+ path+"/";
 %>
 <ul class="sidebar-menu">
             <li class="header">网站概况</li>

@@ -1,6 +1,7 @@
 package app.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +42,42 @@ public class StatisticController extends BaseController {
 	@RequestMapping(value="/index")
 	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> modelMap = new HashMap<String, Object>();
-		//System.out.println("--------------");
-		//实时统计数据
+		//统计的时间段类型：1：今日，2：昨日，3：最近7天，4：最近30天
+		String statTimeType = request.getParameter("statTimeType");
+		if(StringUtils.isEmpty(statTimeType)) {
+			statTimeType = "1";
+		}
+		
+		int startTime=0;
+		int endTime=0;
+		Date date1 = null;
+		Date date2 =  null;
+		if("1".equals(statTimeType)) {	
+			date1 = DateUtil.formatStrToDate(DateUtil.formatDateToString(new Date(), "MM/dd/yyyy") + " 00:00:00", "MM/dd/yyyy hh:mm:ss");
+			date2 = DateUtil.formatStrToDate(DateUtil.formatDateToString(new Date(), "MM/dd/yyyy") + " 23:59:59", "MM/dd/yyyy hh:mm:ss");
+		} else if("2".equals(statTimeType)) {
+			Date yesterday = DateUtil.addDay(new Date(), -1);
+			date1 = DateUtil.formatStrToDate(DateUtil.formatDateToString(yesterday, "MM/dd/yyyy") + " 00:00:00", "MM/dd/yyyy hh:mm:ss");
+			date2 = DateUtil.formatStrToDate(DateUtil.formatDateToString(yesterday, "MM/dd/yyyy") + " 23:59:59", "MM/dd/yyyy hh:mm:ss");
+		} else if("3".equals(statTimeType)) {
+			Date weekAgo = DateUtil.addDay(new Date(), -6);
+			date1 = DateUtil.formatStrToDate(DateUtil.formatDateToString(weekAgo, "MM/dd/yyyy") + " 00:00:00", "MM/dd/yyyy hh:mm:ss");
+			date2 = DateUtil.formatStrToDate(DateUtil.formatDateToString(new Date(), "MM/dd/yyyy") + " 23:59:59", "MM/dd/yyyy hh:mm:ss");
+		
+		} else if("4".equals(statTimeType)) {
+			Date monthAgo = DateUtil.addDay(new Date(), -29);
+			date1 = DateUtil.formatStrToDate(DateUtil.formatDateToString(monthAgo, "MM/dd/yyyy") + " 00:00:00", "MM/dd/yyyy hh:mm:ss");
+			date2 = DateUtil.formatStrToDate(DateUtil.formatDateToString(new Date(), "MM/dd/yyyy") + " 23:59:59", "MM/dd/yyyy hh:mm:ss");
+		}
+		startTime = DateUtil.parseDateToInt(date1);
+		endTime =  DateUtil.parseDateToInt(date2);
 		List<String> statPoints = new ArrayList<String>();
 		statPoints.add(Constant.STAT_POINT_PV);
 		statPoints.add(Constant.STAT_POINT_UV);
 		statPoints.add(Constant.STAT_POINT_NEW_UV);
 		statPoints.add(Constant.STAT_POINT_IP);
-		Map<String, Integer> currStat = statisticService.visitCurrStat(statPoints);
-		//System.out.println(currStat);
-		//request.setAttribute("currStat", currStat);
+		//Map<String, Integer> currStat = statisticService.visitCurrStat(statPoints);
+		Map<String, Integer> currStat = statisticService.visitRangeStat(statPoints, startTime, endTime);
 		modelMap.put("currStat", currStat);
 		return responseView("/statistic/visit_stat_index", modelMap);
 	}
