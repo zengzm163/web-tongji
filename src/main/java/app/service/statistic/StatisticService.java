@@ -1,5 +1,6 @@
 package app.service.statistic;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -203,6 +204,60 @@ public class StatisticService {
 	}
 	
 	/**
+	 * 页面指标统计
+	 * @param pageId 页面id
+	 * @param point 指标：UV、PV、IP、入口次数、跳出次数
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public int pageStat(Integer pageId, String point, int startTime, int endTime) {
+		int count = 0;
+		if(Constant.STAT_POINT_PV .equals(point)) {
+			count = statisticDao.pageStatPV(pageId, startTime, endTime);
+		} else if(Constant.STAT_POINT_UV.equals(point)) {
+			count = statisticDao.pageStatUV(pageId, startTime, endTime);
+		} else if(Constant.STAT_POINT_IP.equals(point)) {
+			count = statisticDao.pageStatIP(pageId, startTime, endTime);
+		} else if(Constant.STAT_POINT_PAGE_ENTER.equals(point)) {
+			count = statisticDao.pageStatEnterCount(pageId, startTime, endTime);
+		} else if(Constant.STAT_POINT_PAGE_EXIT.equals(point)) {
+			count = statisticDao.pageStatOutCount(pageId, startTime, endTime);
+		}
+		return count;
+	}
+	
+	/**
+	 * 页面平均加载时间，单位：秒
+	 * @param pageId
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public double pageLoadTime(Integer pageId, int startTime, int endTime) {
+		double result = statisticDao.pageAvgLoadTime(pageId, startTime, endTime);
+		//转成成秒，保留3为小数
+		double second = result/1000;
+		BigDecimal b = new BigDecimal(second);
+		return b.setScale(3,  BigDecimal.ROUND_HALF_UP).doubleValue();
+	}
+	
+	/**
+	 * 页面平均加载时间，单位：秒
+	 * @param pageId
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public double pageStayTime(Integer pageId, int startTime, int endTime) {
+		double result = statisticDao.pageAvgStayTime(pageId, startTime, endTime);
+		//转成成秒，保留3为小数
+		double second = result/1000;
+		BigDecimal b = new BigDecimal(second);
+		return b.setScale(3,  BigDecimal.ROUND_HALF_UP).doubleValue();
+	}
+	
+	/**
 	 * 浏览器统计
 	 * @param statPoints
 	 * @param startTime
@@ -264,6 +319,27 @@ public class StatisticService {
 			result.add(m);
 		}
 		return result;
+	}
+	
+	/**
+	 * 查找访问量最大的页面url
+	 * @return
+	 */
+	public VisitPage findMaxPVVisitPage() {
+		List<VisitPage> pages = statisticDao.listByPage(0, 1);
+		if(pages == null || pages.isEmpty()) {
+			return null;
+		}
+		return pages.get(0);
+	}
+	
+	/**
+	 * 根据pageId，查找访问页面
+	 * @param id
+	 * @return
+	 */
+	public VisitPage findVisitPageById(Integer pageId) {
+		return statisticDao.findVisitPageById(pageId);
 	}
 	
 }

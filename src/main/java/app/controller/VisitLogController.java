@@ -72,6 +72,7 @@ public class VisitLogController extends BaseController {
 		System.out.println(UUID.randomUUID().toString());
 		System.out.println(UUID.randomUUID().toString());*/
 		System.out.println(Integer.parseInt("-587"));
+		System.out.println((Double.valueOf(2)/3)*100);
 	}
 	
 }

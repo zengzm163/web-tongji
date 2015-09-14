@@ -24,6 +24,36 @@ public class Constant {
 	 * 统计指标：IP数
 	 */
 	public static final String STAT_POINT_IP = "ip";
+	
+	/**
+	 * 统计指标：页面入口次数
+	 */
+	public static final String STAT_POINT_PAGE_ENTER = "page_enter";
+	
+	/**
+	 * 统计指标：页面入口率
+	 */
+	public static final String STAT_POINT_PAGE_ENTER_PCT = "page_enter_pct";
+	
+	/**
+	 * 统计指标：页面退出次数
+	 */
+	public static final String STAT_POINT_PAGE_EXIT = "page_exit";
+	
+	/**
+	 * 统计指标：页面退出率
+	 */
+	public static final String STAT_POINT_PAGE_EXIT_PCT = "page_exit_pct";
+	
+	/**
+	 * 统计指标：页面停留时间
+	 */
+	public static final String STAT_POINT_PAGE_STAY_TIME = "page_stayTime";
+	
+	/**
+	 * 统计指标：页面加载时间
+	 */
+	public static final String STAT_POINT_PAGE_LOAD_TIME = "page_loadTime";
 
 	
 	/**************统计时间类型*****************/
@@ -52,4 +82,9 @@ public class Constant {
 	 * 统计时间：最近30天
 	 */
 	public static final int STAT_TIME_TYPE_LASTEST_30 = 4;
+	
+	/**
+	 * 目标网站域
+	 */
+	public static final String TARGET_SITE_DOMAIN = BizConfig.getInstance().getValue("target.site.domain");
 }

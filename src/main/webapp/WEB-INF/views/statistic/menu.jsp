@@ -24,6 +24,7 @@ String basePath = "https://"+request.getServerName()+":"+request.getServerPort()
               </a>
               <ul class="treeview-menu">
                 <li ><a href="<%=basePath%>statistic/pageStatIndex"><i class="fa fa-circle-o"></i> 受访页面</a></li>
+                <li ><a href="<%=basePath%>statistic/pageDetail"><i class="fa fa-circle-o"></i> 页面详情</a></li>
               </ul>
             </li>
             

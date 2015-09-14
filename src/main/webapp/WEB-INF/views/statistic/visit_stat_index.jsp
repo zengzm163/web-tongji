@@ -160,7 +160,7 @@ String basePath = "https://"+request.getServerName()+":"+request.getServerPort()
                  <input type="checkbox" value="new_uv" name="cb_point"/>&nbsp;&nbsp;新访客数&nbsp;&nbsp;&nbsp;&nbsp;
                  
              <button class="btn bg-purple margin">统计日期：</button>
-               <input input="text" class="stat-daterange"  name="timeRange" id="timeRange" size="30"/>&nbsp;&nbsp;
+               <input type="text" class="stat-daterange"  name="timeRange" id="timeRange" size="30"/>&nbsp;&nbsp;
                <input type="button" onclick="ok()" name="" value="确定" class="btn btn-info btn-flat"/>
 				
               </div>

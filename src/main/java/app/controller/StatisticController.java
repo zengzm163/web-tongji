@@ -1,5 +1,6 @@
 package app.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import app.common.DateUtil;
 import app.common.GsonUtil;
 import app.common.PageResult;
 import app.controller.base.BaseController;
+import app.ddl.VisitPage;
 import app.service.statistic.StatisticService;
 
 /**
@@ -295,6 +297,95 @@ public class StatisticController extends BaseController {
 				statisticService.osStat(statPoints, startTime, endTime);
 		result.put("state", true);
 		result.put("data", data);
+		return GsonUtil.toJson(result);
+	}
+	
+	/**
+	 * 页面详情入口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/pageDetail")
+	public ModelAndView pageDetail(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		//进入页面详情统计界面，如果没有传pageId，则默认取访问量最大的页面
+		String pageId = request.getParameter("pageId");
+		VisitPage visitPage = null;
+		if(StringUtils.isEmpty(pageId)) {
+			visitPage = statisticService.findMaxPVVisitPage();
+		} else {
+			visitPage = statisticService.findVisitPageById(Integer.valueOf(pageId));
+		}
+		
+		if(visitPage != null) {
+			modelMap.put("pageUrl", visitPage.getPageUrl());
+			modelMap.put("pageId", visitPage.getId());
+		}
+		return responseView("/statistic/page_detail", modelMap);
+	}
+	
+	/**
+	 * 页面详情主要指标统计：PV、UV、IP、入口次数、跳出次数、加载时间、停留时间
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/pageDetailMainPoint")
+	public @ResponseBody String pageDetailMainPoint(HttpServletRequest request, HttpServletResponse response) {
+		//统计的目标页面ID
+		String pageId = request.getParameter("pageId");
+		//统计的时间范围,格式：yyyy/MM/dd-yyyy/MM/dd
+		String timeRange = request.getParameter("timeRange");
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(StringUtils.isEmpty(timeRange) || StringUtils.isEmpty(pageId)) {
+			result.put("state", false);
+			result.put("msg", "确实必要参数");
+			return GsonUtil.toJson(result);
+		}
+		String[] times = timeRange.split("-");
+		int startTime = DateUtil.parseDateToInt(
+				DateUtil.formatStrToDate(times[0].trim() + " 00:00:00", "MM/dd/yyyy hh:mm:ss"));
+		int endTime = DateUtil.parseDateToInt(
+				DateUtil.formatStrToDate(times[1].trim()+ " 23:59:59", "MM/dd/yyyy hh:mm:ss"));
+		int countPV = statisticService.pageStat(Integer.valueOf(pageId), 
+				Constant.STAT_POINT_PV, startTime, endTime);
+		int countUV = statisticService.pageStat(Integer.valueOf(pageId), 
+				Constant.STAT_POINT_UV, startTime, endTime);
+		int countIP = statisticService.pageStat(Integer.valueOf(pageId), 
+				Constant.STAT_POINT_IP, startTime, endTime);
+		//入口次数
+		int countEnter = statisticService.pageStat(Integer.valueOf(pageId), 
+				Constant.STAT_POINT_PAGE_ENTER, startTime, endTime);
+		//入口率：入口次数/PV
+		double countEnterPct = 0.0;
+		if(countPV > 0) {
+			countEnterPct = (Double.valueOf(countEnter)/countPV)*100;
+		}
+		//跳出次数
+		int countExit = statisticService.pageStat(Integer.valueOf(pageId), 
+				Constant.STAT_POINT_PAGE_EXIT, startTime, endTime);
+		//跳出率
+		double countExitPct = 0.0;
+		if(countPV > 0) {
+			countExitPct = (Double.valueOf(countExit)/countPV)*100;
+		}
+		//页面平均停留时长
+		double stayTime = statisticService.pageStayTime(Integer.valueOf(pageId), startTime, endTime);
+		//页面平均加载时长
+		double loadTime = statisticService.pageLoadTime(Integer.valueOf(pageId), startTime, endTime);
+		
+		result.put(Constant.STAT_POINT_PV, countPV);
+		result.put(Constant.STAT_POINT_UV, countUV);
+		result.put(Constant.STAT_POINT_IP, countIP);
+		result.put(Constant.STAT_POINT_PAGE_ENTER, countEnter);
+		result.put(Constant.STAT_POINT_PAGE_ENTER_PCT, 
+				new BigDecimal(countEnterPct).setScale(1).doubleValue());
+		result.put(Constant.STAT_POINT_PAGE_EXIT, countExit);
+		result.put(Constant.STAT_POINT_PAGE_EXIT_PCT, 
+				new BigDecimal(countExitPct).setScale(1).doubleValue());
+		result.put(Constant.STAT_POINT_PAGE_STAY_TIME, stayTime);
+		result.put(Constant.STAT_POINT_PAGE_LOAD_TIME, loadTime);
 		return GsonUtil.toJson(result);
 	}
 	

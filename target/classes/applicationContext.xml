@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"    
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"    
+    xmlns:context="http://www.springframework.org/schema/context"    
+
+    xsi:schemaLocation="     
+           http://www.springframework.org/schema/beans     
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd     
+           http://www.springframework.org/schema/context     
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd "> 
+	
+	
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/db.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"   destroy-method="close">
+        <property name="driverClass" value="${db.driver.class}"/>      
+    	<property name="jdbcUrl" value="${db.url}"/>      
+    	<property name="user" value="${db.username}"/>      
+    	<property name="password" value="${db.password}"/>  
+    	<property name="checkoutTimeout" value="${pool.timeout}"/>  
+    	<property name="maxPoolSize" value="${pool.max.size}"/>
+    	<property name="minPoolSize" value="${pool.min.size}"/>
+    	<property name="maxIdleTime" value="60"/>
+		<property name="idleConnectionTestPeriod" value="60"/>
+		<property name="preferredTestQuery" value="select id from page where id=1"/>
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"> 
+	   <property name="dataSource" ref="dataSource" /> 
+	</bean> 
+	
+	<context:component-scan base-package="app.dao"  />
+	
+	<context:component-scan base-package="app.service"  />
+</beans>
